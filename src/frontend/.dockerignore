@@ -1,0 +1,11 @@
+.vscode/
+node_modules/
+build/
+dist/
+.DS_Store
+.gitignore
+.dockerignore
+Dockerfile
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
