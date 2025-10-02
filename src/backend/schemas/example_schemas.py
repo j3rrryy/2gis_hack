@@ -7,3 +7,8 @@ class CreateRequestSchema(BaseModel):
 
 class CreateResponseSchema(BaseModel):
     example_id: str
+
+
+class ReadSchema(BaseModel):
+    example_id: str
+    name: str

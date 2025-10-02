@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import setup_cache
 from di import lifespan
+from routers import example_router
 
 
 def main() -> FastAPI:
@@ -22,6 +23,7 @@ def main() -> FastAPI:
         allow_headers=["*"],
         allow_credentials=True,
     )
+    app.include_router(example_router.router)
     setup_cache()
     return app
 

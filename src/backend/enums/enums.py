@@ -1,1 +1,5 @@
-# from enum import Enum
+from enum import Enum
+
+
+class CacheKeys(Enum):
+    EXAMPLES = "examples"
