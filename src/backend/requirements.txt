@@ -2,7 +2,6 @@ alembic==1.16.5,
 asyncpg==0.30.0,
 cashews[redis]==7.4.1
 fastapi==0.118.0
-fastapi-controllers==0.3.0
 greenlet>=3.2.4
 sqlalchemy==2.0.43
 uvicorn[standard]==0.37.0
