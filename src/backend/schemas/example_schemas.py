@@ -9,6 +9,10 @@ class CreateResponseSchema(BaseModel):
     example_id: str
 
 
-class ReadSchema(BaseModel):
+class ExampleSchema(BaseModel):
     example_id: str
     name: str
+
+
+class UpdateSchema(BaseModel):
+    name: str | None = Field(None, min_length=3, max_length=88)

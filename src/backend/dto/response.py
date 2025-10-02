@@ -4,6 +4,6 @@ from .base import FromModelMixin, ToSchemaMixin
 
 
 @dataclass(slots=True, frozen=True)
-class ReadResponseDTO(FromModelMixin, ToSchemaMixin):
+class ExampleResponseDTO(FromModelMixin, ToSchemaMixin):
     example_id: str
     name: str
