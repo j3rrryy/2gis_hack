@@ -2,6 +2,7 @@ import os
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator, Optional
 
+from aiohttp import ClientSession
 from fastapi import FastAPI
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import (
@@ -70,8 +71,43 @@ class SessionManager:
                 raise
 
 
+class ClientSessionManager:
+    client_session: Optional[ClientSession] = None
+    _started = False
+
+    @classmethod
+    async def setup(cls) -> None:
+        if cls._started:
+            return
+        try:
+            cls.client_session = ClientSession()
+            cls._started = True
+        except Exception:
+            await cls.close()
+            raise
+
+    @classmethod
+    async def close(cls) -> None:
+        if cls.client_session is not None:
+            try:
+                await cls.client_session.close()
+            finally:
+                cls.client_session = None
+        cls._started = False
+
+    @classmethod
+    async def client_session_factory(cls) -> AsyncGenerator[ClientSession, None]:
+        if not cls.client_session or not cls._started:
+            raise RuntimeError(
+                "ClientSession not initialized; ClientSessionManager.setup() was not called"
+            )
+        yield cls.client_session
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await SessionManager.setup()
+    await ClientSessionManager.setup()
     yield
+    await ClientSessionManager.close()
     await SessionManager.close()

@@ -1,9 +1,13 @@
+from typing import Any
+
+from aiohttp import ClientSession
 from cashews import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dto import request as request_dto
 from dto import response as response_dto
 from enums.enums import CacheKeys
+from external import ExampleExternal
 from repository import ExampleRepository
 
 
@@ -61,6 +65,10 @@ class ExampleService:
     async def delete_example(cls, example_id: str, session: AsyncSession) -> None:
         await ExampleRepository.delete_example(example_id, session)
         await cls._invalidate_example_cache(example_id)
+
+    @staticmethod
+    async def external_api_example(client_session: ClientSession) -> dict[str, Any]:
+        return await ExampleExternal.external_api_example(client_session)
 
     @staticmethod
     async def _invalidate_example_cache(example_id: str) -> None:

@@ -1,9 +1,11 @@
+from typing import Any
 from uuid import UUID
 
+from aiohttp import ClientSession
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from di import SessionManager
+from di import ClientSessionManager, SessionManager
 from dto import request as request_dto
 from schemas import (
     CreateRequestSchema,
@@ -60,3 +62,12 @@ async def delete_example(
     session: AsyncSession = Depends(SessionManager.session_factory),
 ) -> None:
     await ExampleService.delete_example(str(example_id), session)
+
+
+@router.get("/external/api", response_model=dict[str, Any])
+async def external_api_example(
+    client_session: ClientSession = Depends(
+        ClientSessionManager.client_session_factory
+    ),
+) -> dict[str, Any]:
+    return await ExampleService.external_api_example(client_session)
