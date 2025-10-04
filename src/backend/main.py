@@ -23,7 +23,7 @@ def main() -> FastAPI:
         allow_headers=["*"],
         allow_credentials=True,
     )
-    app.include_router(example_router.router)
+    # app.include_router(example_router.router)
     setup_cache()
     return app
 

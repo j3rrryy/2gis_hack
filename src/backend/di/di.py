@@ -38,6 +38,7 @@ class SessionManager:
                 max_overflow=20,
                 pool_timeout=30,
                 pool_recycle=1800,
+                plugins=["geoalchemy2"],
             )
             cls.sessionmaker = async_sessionmaker(
                 cls._engine, class_=AsyncSession, expire_on_commit=False

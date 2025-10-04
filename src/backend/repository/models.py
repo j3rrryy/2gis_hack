@@ -1,19 +1,31 @@
+from datetime import datetime
 from uuid import uuid4
 
 import sqlalchemy as sa
+from geoalchemy2 import Geography, WKBElement
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, declarative_base, mapped_column
 
 Base = declarative_base()
 
 
-class Example(Base):
-    __tablename__ = "examples"
+class Calculation(Base):
+    __tablename__ = "calculations"
 
-    example_id: Mapped[str] = mapped_column(
+    calculation_id: Mapped[str] = mapped_column(
         UUID(False), primary_key=True, default=uuid4
     )
-    name: Mapped[str] = mapped_column(sa.String(100), unique=True, nullable=False)
+    coordinate: Mapped[WKBElement] = mapped_column(
+        Geography("POINT", srid=4326), nullable=False
+    )
+    result: Mapped[float] = mapped_column(sa.Float)
+    is_ready: Mapped[bool] = mapped_column(sa.Boolean, server_default=sa.text("false"))
+    created_at: Mapped[datetime] = mapped_column(
+        sa.TIMESTAMP(True), nullable=False, server_default=sa.func.now()
+    )
+    calculated_at: Mapped[datetime] = mapped_column(
+        sa.TIMESTAMP(True), onupdate=sa.func.now()
+    )
 
     def __str__(self) -> str:
-        return f"<Example: {self.example_id}>"
+        return f"<Calculation: {self.calculation_id}>"

@@ -50,7 +50,7 @@ services:
     container_name: backend
 
   postgres:
-    image: postgres:17.5-alpine
+    image: kartoza/postgis:17-3.5
     restart: unless-stopped
     env_file:
       - ./docker/.env
