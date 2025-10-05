@@ -20,26 +20,39 @@ from .celery_app import celery_app
     time_limit=210,
 )
 def calculate(calculation_id: str, data: dict[str, float]) -> None:
-    @SessionManager.run_with_session
-    @ClientSessionManager.run_with_client_session
-    async def wrapper(*, session: AsyncSession, client_session: ClientSession) -> None:
-        calculation = await session.get(Calculation, calculation_id)
+    async def wrapper() -> None:
+        # setup resources
+        await SessionManager.setup()
+        await ClientSessionManager.setup()
 
-        if calculation is None:
-            raise CalculationNotFound(f"Calculation {calculation_id} not found")
+        @SessionManager.run_with_session
+        @ClientSessionManager.run_with_client_session
+        async def _calculate(
+            *, session: AsyncSession, client_session: ClientSession
+        ) -> None:
+            calculation = await session.get(Calculation, calculation_id)
 
-        calculation.status = CalculationStatus.PROCESSING.value
-        await session.commit()
+            if calculation is None:
+                raise CalculationNotFound(f"Calculation {calculation_id} not found")
 
-        try:
-            ...
-        except Exception:
-            calculation.status = CalculationStatus.FAILED.value
+            calculation.status = CalculationStatus.PROCESSING.value
             await session.commit()
-            raise
 
-        calculation.calculated_at = datetime.now()
-        calculation.status = CalculationStatus.COMPLETED.value
-        await session.commit()
+            try:
+                ...
+            except Exception:
+                calculation.status = CalculationStatus.FAILED.value
+                await session.commit()
+                raise
 
-    uvloop.run(wrapper())  # pyright: ignore[reportCallIssue]
+            calculation.calculated_at = datetime.now()
+            calculation.status = CalculationStatus.COMPLETED.value
+            await session.commit()
+
+        await _calculate()  # pyright: ignore[reportCallIssue]
+
+        # cleanup resources
+        await ClientSessionManager.close()
+        await SessionManager.close()
+
+    uvloop.run(wrapper())
