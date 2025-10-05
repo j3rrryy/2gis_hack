@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from di import ClientSessionManager, SessionManager
 from enums import CalculationStatus
 from exceptions import CalculationNotFound
+from location_scorer import ScoreCalculator
 from repository import Calculation
 
 from .celery_app import celery_app
@@ -39,12 +40,15 @@ def calculate(calculation_id: str, data: dict[str, float]) -> None:
             await session.commit()
 
             try:
-                ...
+                result = await ScoreCalculator.run(
+                    data["coordinate_x"], data["coordinate_y"], client_session
+                )
             except Exception:
                 calculation.status = CalculationStatus.FAILED.value
                 await session.commit()
                 raise
 
+            calculation.result = result
             calculation.calculated_at = datetime.now()
             calculation.status = CalculationStatus.COMPLETED.value
             await session.commit()

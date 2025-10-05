@@ -1,11 +1,13 @@
-# Темплейт для хакатона 2ГИС
+# Решение от команды "Компанейцы."
+
+## Трек "Городские данные"
 
 > [!NOTE]
 > API `http://localhost/api`
 >
 > Swagger `http://localhost/api/docs`
 
-## :rocket: Старт
+## :rocket: Запуск
 
 ```shell
 docker compose up --build -d
