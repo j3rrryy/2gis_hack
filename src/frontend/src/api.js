@@ -1,8 +1,8 @@
 // API helper functions for communicating with the backend.
-// The API prefix is fixed to http://localhost/api as per user instruction.
+// The API prefix is fixed to /api as per user instruction.
 // Coordinates are sent as lat (coordinate_x) and lon (coordinate_y) due to a known swap issue.
 
-const API_BASE = 'http://localhost/api';
+const API_BASE = '/api';
 
 /**
  * Create a new calculation for a given coordinate.
