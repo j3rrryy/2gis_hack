@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: ddcdd327cd60
+Revision ID: ee27a4ad688e
 Revises:
-Create Date: 2025-10-04 20:55:35.544789
+Create Date: 2025-10-05 00:18:00.377880
 
 """
 
@@ -13,7 +13,7 @@ from alembic import op
 from geoalchemy2 import Geography
 
 # revision identifiers, used by Alembic.
-revision: str = "ddcdd327cd60"
+revision: str = "ee27a4ad688e"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -36,9 +36,12 @@ def upgrade() -> None:
             ),
             nullable=False,
         ),
-        sa.Column("result", sa.Float(), nullable=False),
+        sa.Column("result", sa.Float(), nullable=True),
         sa.Column(
             "is_ready", sa.Boolean(), server_default=sa.text("false"), nullable=False
+        ),
+        sa.Column(
+            "is_failed", sa.Boolean(), server_default=sa.text("false"), nullable=False
         ),
         sa.Column(
             "created_at",
@@ -46,7 +49,7 @@ def upgrade() -> None:
             server_default=sa.text("now()"),
             nullable=False,
         ),
-        sa.Column("calculated_at", sa.TIMESTAMP(timezone=True), nullable=False),
+        sa.Column("calculated_at", sa.TIMESTAMP(timezone=True), nullable=True),
         sa.PrimaryKeyConstraint("calculation_id"),
     )
     op.create_geospatial_index(  # pyright: ignore[reportAttributeAccessIssue]

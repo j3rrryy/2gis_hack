@@ -1,5 +1,6 @@
 import os
 from contextlib import asynccontextmanager
+from functools import wraps
 from typing import AsyncGenerator, Optional
 
 from aiohttp import ClientSession
@@ -71,6 +72,24 @@ class SessionManager:
                 await session.rollback()
                 raise
 
+    @classmethod
+    def run_with_session(cls, func):
+        if not cls.sessionmaker or not cls._started:
+            raise RuntimeError(
+                "Sessionmaker not initialized; SessionManager.setup() was not called"
+            )
+
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            async with cls.sessionmaker() as session:  # pyright: ignore[reportOptionalCall]
+                try:
+                    return await func(*args, **kwargs, session=session)
+                except Exception:
+                    await session.rollback()
+                    raise
+
+        return wrapper
+
 
 class ClientSessionManager:
     client_session: Optional[ClientSession] = None
@@ -103,6 +122,19 @@ class ClientSessionManager:
                 "ClientSession not initialized; ClientSessionManager.setup() was not called"
             )
         yield cls.client_session
+
+    @classmethod
+    def run_with_client_session(cls, func):
+        if not cls.client_session or not cls._started:
+            raise RuntimeError(
+                "ClientSession not initialized; ClientSessionManager.setup() was not called"
+            )
+
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            return await func(*args, **kwargs, client_session=cls.client_session)
+
+        return wrapper
 
 
 @asynccontextmanager

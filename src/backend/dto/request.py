@@ -1,13 +1,21 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING, cast
 
-from .base import FromSchemaMixin
+from geoalchemy2 import WKTElement
+
+from .base import FromSchemaMixin, Model, ToModelMixin
+
+if TYPE_CHECKING:
+    from repository import Calculation
 
 
 @dataclass(slots=True, frozen=True)
-class CreateRequestDTO(FromSchemaMixin):
-    name: str
+class CreateCalculationRequestDTO(FromSchemaMixin, ToModelMixin):
+    coordinate_x: float
+    coordinate_y: float
 
-
-@dataclass(slots=True, frozen=True)
-class UpdateRequestDTO(FromSchemaMixin):
-    name: str | None
+    def to_model(self, model: type[Model]) -> Model:
+        _model = cast("Calculation", model)
+        wkt_point = f"POINT({self.coordinate_x} {self.coordinate_y})"
+        coordinate = WKTElement(wkt_point, srid=4326)
+        return _model(coordinate=coordinate)

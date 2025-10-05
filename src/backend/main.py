@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import setup_cache
 from di import lifespan
+from routers import calculation_router
 
 
 def main() -> FastAPI:
@@ -22,7 +23,7 @@ def main() -> FastAPI:
         allow_headers=["*"],
         allow_credentials=True,
     )
-    # app.include_router(example_router.router)
+    app.include_router(calculation_router.router)
     setup_cache()
     return app
 
@@ -34,6 +35,7 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=8000,
         workers=2,
+        loop="uvloop",
         limit_concurrency=500,
         limit_max_requests=10000,
         reload=bool(int(os.environ["DEBUG"])),

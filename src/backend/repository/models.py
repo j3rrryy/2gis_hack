@@ -18,14 +18,13 @@ class Calculation(Base):
     coordinate: Mapped[WKBElement] = mapped_column(
         Geography("POINT", srid=4326), nullable=False
     )
-    result: Mapped[float] = mapped_column(sa.Float)
+    result: Mapped[float] = mapped_column(sa.Float, nullable=True)
     is_ready: Mapped[bool] = mapped_column(sa.Boolean, server_default=sa.text("false"))
+    is_failed: Mapped[bool] = mapped_column(sa.Boolean, server_default=sa.text("false"))
     created_at: Mapped[datetime] = mapped_column(
         sa.TIMESTAMP(True), nullable=False, server_default=sa.func.now()
     )
-    calculated_at: Mapped[datetime] = mapped_column(
-        sa.TIMESTAMP(True), onupdate=sa.func.now()
-    )
+    calculated_at: Mapped[datetime] = mapped_column(sa.TIMESTAMP(True), nullable=True)
 
     def __str__(self) -> str:
         return f"<Calculation: {self.calculation_id}>"

@@ -34,6 +34,8 @@ services:
   backend:
     build:
       context: ./src/backend/
+    image: backend
+    pull_policy: never
     restart: unless-stopped
     expose:
       - 8000
@@ -48,6 +50,22 @@ services:
       - postgres
       - redis
     container_name: backend
+
+  worker:
+    image: backend
+    pull_policy: never
+    restart: unless-stopped
+    env_file:
+      - ./docker/.env
+    volumes:
+      - ./src/backend/:/app/
+    networks:
+      - backend
+    depends_on:
+      - postgres
+      - redis
+    command: celery -A tasks.celery_app worker --loglevel=info
+    container_name: worker
 
   postgres:
     image: kartoza/postgis:17-3.5
