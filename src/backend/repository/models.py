@@ -6,6 +6,8 @@ from geoalchemy2 import Geography, WKBElement
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, declarative_base, mapped_column
 
+from enums import CalculationStatus
+
 Base = declarative_base()
 
 
@@ -18,10 +20,11 @@ class Calculation(Base):
     coordinate: Mapped[WKBElement] = mapped_column(
         Geography("POINT", srid=4326), nullable=False
     )
-    result: Mapped[float] = mapped_column(sa.Float, nullable=True)
-    is_ready: Mapped[bool] = mapped_column(sa.Boolean, server_default=sa.text("false"))
-    is_failed: Mapped[bool] = mapped_column(sa.Boolean, server_default=sa.text("false"))
-    created_at: Mapped[datetime] = mapped_column(
+    result: Mapped[int] = mapped_column(sa.Integer, nullable=True)
+    status: Mapped[str] = mapped_column(
+        sa.String(20), nullable=False, server_default=CalculationStatus.PENDING.value
+    )
+    scheduled_at: Mapped[datetime] = mapped_column(
         sa.TIMESTAMP(True), nullable=False, server_default=sa.func.now()
     )
     calculated_at: Mapped[datetime] = mapped_column(sa.TIMESTAMP(True), nullable=True)

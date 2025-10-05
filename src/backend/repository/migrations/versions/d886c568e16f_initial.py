@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: ee27a4ad688e
+Revision ID: d886c568e16f
 Revises:
-Create Date: 2025-10-05 00:18:00.377880
+Create Date: 2025-10-05 01:32:34.156738
 
 """
 
@@ -13,7 +13,7 @@ from alembic import op
 from geoalchemy2 import Geography
 
 # revision identifiers, used by Alembic.
-revision: str = "ee27a4ad688e"
+revision: str = "d886c568e16f"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -36,15 +36,12 @@ def upgrade() -> None:
             ),
             nullable=False,
         ),
-        sa.Column("result", sa.Float(), nullable=True),
+        sa.Column("result", sa.Integer(), nullable=True),
         sa.Column(
-            "is_ready", sa.Boolean(), server_default=sa.text("false"), nullable=False
+            "status", sa.String(length=20), server_default="pending", nullable=False
         ),
         sa.Column(
-            "is_failed", sa.Boolean(), server_default=sa.text("false"), nullable=False
-        ),
-        sa.Column(
-            "created_at",
+            "scheduled_at",
             sa.TIMESTAMP(timezone=True),
             server_default=sa.text("now()"),
             nullable=False,

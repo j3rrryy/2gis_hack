@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 
@@ -8,3 +10,10 @@ class CreateCalculationRequestSchema(BaseModel):
 
 class CreateCalculationResponseSchema(BaseModel):
     calculation_id: str
+
+
+class CalculationSchema(BaseModel):
+    result: int | None
+    status: str
+    scheduled_at: datetime
+    calculated_at: datetime | None
