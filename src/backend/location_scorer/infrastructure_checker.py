@@ -9,7 +9,7 @@ from .location_scorer_external import LocationScorerExternal
 
 class InfrastructureChecker:
     BASE_MARKERS_URL = "https://catalog.api.2gis.com/3.0/markers"
-    BASE_ROUTING_URL = "http://routing.api.2gis.com/routing/7.0.0/global"
+    BASE_ROUTING_URL = "https://routing.api.2gis.com/routing/7.0.0/global"
     API_KEY = os.environ["API_KEY"]
 
     logger = logging.getLogger("InfrastructureChecker")
@@ -22,11 +22,12 @@ class InfrastructureChecker:
         coordinate_y: float,
         client_session: ClientSession,
     ) -> Optional[int]:
+        adjusted_coords = cls._adjust_coordinates(coordinate_x, coordinate_y)
         data = await LocationScorerExternal.get_request(
             cls.BASE_MARKERS_URL,
             {
                 "q": infra_type,
-                "point": f"{coordinate_y},{coordinate_x}",
+                "point": f"{adjusted_coords[1]},{adjusted_coords[0]}",
                 "radius": 1000,
                 "sort": "distance",
                 "key": cls.API_KEY,
@@ -41,20 +42,18 @@ class InfrastructureChecker:
             {
                 "points": [
                     {
-                        "type": "stop",
+                        "type": "walking",
                         "lat": first_item["lat"],
                         "lon": first_item["lon"],
                     },
                     {
-                        "type": "stop",
-                        "lat": coordinate_x,
-                        "lon": coordinate_y,
+                        "type": "walking",
+                        "lat": adjusted_coords[0],
+                        "lon": adjusted_coords[1],
                     },
                 ],
                 "locale": "ru",
                 "transport": "walking",
-                "route_mode": "fastest",
-                "traffic_mode": "jam",
             },
             client_session,
         )
@@ -114,3 +113,18 @@ class InfrastructureChecker:
         except Exception as exc:
             cls.logger.error(str(exc))
             raise
+
+    @staticmethod
+    def _adjust_coordinates(
+        coordinate_x: float, coordinate_y: float
+    ) -> tuple[float, float]:
+        if coordinate_x <= -180:
+            coordinate_x = -179.999
+        elif coordinate_x >= 180:
+            coordinate_x = 179.999
+
+        if coordinate_y <= -90:
+            coordinate_y = -89.999
+        elif coordinate_y >= 90:
+            coordinate_y = 89.999
+        return coordinate_x, coordinate_y

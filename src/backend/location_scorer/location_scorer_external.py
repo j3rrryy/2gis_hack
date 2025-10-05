@@ -31,7 +31,7 @@ class LocationScorerExternal:
             async with client_session.post(
                 url,
                 params=params,
-                data=data,
+                json=data,
                 headers={"Content-Type": "application/json"},
             ) as response:
                 response.raise_for_status()
