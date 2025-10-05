@@ -1,12 +1,12 @@
 import requests
 import json
-from typing import Optional, Dict, List, Any
-from var_dto import LocationDto, PointDto, RoutingRequestDto
+from typing import Optional, Dict, Any
+from var_dto import PointDto, RoutingRequestDto
 
 
 def parse_first_item_to_point_dto(data: dict) -> PointDto:
     try:
-        items = data.get('result', {}).get('items', [])
+        items = data.get("result", {}).get("items", [])
 
         if not items:
             print("Список items пуст, возвращаю PointDto с значениями по умолчанию")
@@ -14,12 +14,11 @@ def parse_first_item_to_point_dto(data: dict) -> PointDto:
 
         first_item = items[0]
         print(
-            f"Найден объект: ID={first_item.get('id')}, координаты=({first_item.get('lat')}, {first_item.get('lon')})")
+            f"Найден объект: ID={first_item.get('id')}, координаты=({first_item.get('lat')}, {first_item.get('lon')})"
+        )
 
         point_dto = PointDto(
-            type='stop',
-            lat=first_item.get('lat'),
-            lon=first_item.get('lon')
+            type="stop", lat=first_item.get("lat"), lon=first_item.get("lon")
         )
 
         return point_dto
@@ -31,9 +30,9 @@ def parse_first_item_to_point_dto(data: dict) -> PointDto:
 
 class InfrastructureChecker:
     def __init__(self):
-        self.base_url_makers = 'https://catalog.api.2gis.com/3.0/markers?'
-        self.base_url_routing = 'http://routing.api.2gis.com/routing/7.0.0/global?'
-        self.key = '2dfc0b30-cdb7-4014-9142-4d101cb77824'
+        self.base_url_makers = "https://catalog.api.2gis.com/3.0/markers?"
+        self.base_url_routing = "http://routing.api.2gis.com/routing/7.0.0/global?"
+        self.key = "2dfc0b30-cdb7-4014-9142-4d101cb77824"
 
     def _make_request_get(self, url: str) -> Optional[dict]:
         try:
@@ -65,14 +64,14 @@ class InfrastructureChecker:
         print(data)
         item = parse_first_item_to_point_dto(data)
         print(item)
-        items = [PointDto(type='stop', lat=item.lat, lon=item.lon)]
-        items.append(PointDto(type='stop', lat=x, lon=y))
+        items = [PointDto(type="stop", lat=item.lat, lon=item.lon)]
+        items.append(PointDto(type="stop", lat=x, lon=y))
         routing_params = RoutingRequestDto(
             points=items,
             locale="ru",
             transport="walking",
             route_mode="fastest",
-            traffic_mode="jam"
+            traffic_mode="jam",
         )
         url_routing = f"{self.base_url_routing}&key={self.key}"
         route = self._make_request_post(url_routing, routing_params)
@@ -81,13 +80,16 @@ class InfrastructureChecker:
 
     def sum_maneuvers_distance(self, route: Dict[str, Any]) -> Optional[int]:
         try:
-            if 'maneuvers' not in route:
+            if "maneuvers" not in route:
                 return None
 
             total_distance = 0
-            for maneuver in route['maneuvers']:
-                if 'outcoming_path' in maneuver and 'distance' in maneuver['outcoming_path']:
-                    total_distance += maneuver['outcoming_path']['distance']
+            for maneuver in route["maneuvers"]:
+                if (
+                    "outcoming_path" in maneuver
+                    and "distance" in maneuver["outcoming_path"]
+                ):
+                    total_distance += maneuver["outcoming_path"]["distance"]
 
             return total_distance if total_distance > 0 else None
 
@@ -98,26 +100,28 @@ class InfrastructureChecker:
     def get_route_length(self, route_data: Dict[str, Any]) -> Optional[int]:
         print(route_data)
         try:
-            if not route_data or 'result' not in route_data:
+            if not route_data or "result" not in route_data:
                 print("Отсутствует ключ 'result' в данных маршрута")
-            results = route_data['result']
+            results = route_data["result"]
             if not results:
                 print("Список маршрутов пуст")
                 return None
             first_route = results[0]
-            if 'total_distance' in first_route:
-                distance = first_route['total_distance']
+            if "total_distance" in first_route:
+                distance = first_route["total_distance"]
                 print(f"Длина маршрута: {distance} м")
                 return distance
-            elif 'ui_total_distance' in first_route:
-                ui_distance = first_route['ui_total_distance']
-                if 'value' in ui_distance:
+            elif "ui_total_distance" in first_route:
+                ui_distance = first_route["ui_total_distance"]
+                if "value" in ui_distance:
                     try:
-                        distance = int(ui_distance['value'])
+                        distance = int(ui_distance["value"])
                         print(f"Длина маршрута: {distance} м")
                         return distance
                     except (ValueError, TypeError):
-                        print(f"Некорректное значение расстояния: {ui_distance['value']}")
+                        print(
+                            f"Некорректное значение расстояния: {ui_distance['value']}"
+                        )
             else:
                 total_from_maneuvers = self.sum_maneuvers_distance(first_route)
                 if total_from_maneuvers:
@@ -127,11 +131,8 @@ class InfrastructureChecker:
             print("Не удалось извлечь длину маршрута")
             return None
 
-        except Exception as e:
-
+        except Exception:
             return None
-
-
 
 
 infra = InfrastructureChecker()

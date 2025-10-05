@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
-from typing import List, Union
+from typing import List
+
 
 class LocationDto(BaseModel):
     geometry_id: str | None = Field(default=None)
@@ -13,10 +14,12 @@ class LocationDto(BaseModel):
     type: str | None = Field(default=None)
     vital: int = Field(default=0)
 
+
 class PointDto(BaseModel):
-    type: str = Field(default='stop')
+    type: str = Field(default="stop")
     lat: float | None = Field(default=55.736483)
     lon: float | None = Field(default=37.589985)
+
 
 class RoutingRequestDto(BaseModel):
     points: List[PointDto] = Field(default=[])
