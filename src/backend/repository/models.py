@@ -20,7 +20,7 @@ class Calculation(Base):
     coordinate: Mapped[WKBElement] = mapped_column(
         Geography("POINT", srid=4326), nullable=False
     )
-    result: Mapped[int] = mapped_column(sa.Integer, nullable=True)
+    result: Mapped[dict] = mapped_column(sa.JSON, nullable=True)
     status: Mapped[str] = mapped_column(
         sa.String(20), nullable=False, server_default=CalculationStatus.PENDING.value
     )

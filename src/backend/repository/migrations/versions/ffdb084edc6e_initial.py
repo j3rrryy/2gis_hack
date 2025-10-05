@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: d886c568e16f
+Revision ID: ffdb084edc6e
 Revises:
-Create Date: 2025-10-05 01:32:34.156738
+Create Date: 2025-10-05 09:41:07.250424
 
 """
 
@@ -13,7 +13,7 @@ from alembic import op
 from geoalchemy2 import Geography
 
 # revision identifiers, used by Alembic.
-revision: str = "d886c568e16f"
+revision: str = "ffdb084edc6e"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -36,7 +36,7 @@ def upgrade() -> None:
             ),
             nullable=False,
         ),
-        sa.Column("result", sa.Integer(), nullable=True),
+        sa.Column("result", sa.JSON(), nullable=True),
         sa.Column(
             "status", sa.String(length=20), server_default="pending", nullable=False
         ),

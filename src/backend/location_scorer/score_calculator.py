@@ -51,7 +51,7 @@ class ScoreCalculator:
     @classmethod
     async def run(
         cls, coordinate_x: float, coordinate_y: float, client_session: ClientSession
-    ) -> int:
+    ) -> dict[str, int]:
         async def calculate_part(inf_type: str, bounds: list[int]) -> Optional[float]:
             try:
                 distance = await InfrastructureChecker.check_closest_infrastructure(
@@ -79,10 +79,15 @@ class ScoreCalculator:
             for inf_type, bounds in cls.CATEGORY_BOUNDS.items()
         ]
         results = await asyncio.gather(*tasks)
-        valid_results = [result for result in results if result is not None]
+        valid_results = {
+            category.capitalize().replace("_", " "): round(result)
+            for category, result in zip(cls.CATEGORY_BOUNDS, results)
+            if result is not None
+        }
 
         if not valid_results:
-            return 0
+            return {"score": 0}
 
-        score = sum(valid_results) / len(valid_results)
-        return round(score)
+        score = sum(valid_results.values()) / len(valid_results)
+        valid_results["score"] = round(score)
+        return valid_results

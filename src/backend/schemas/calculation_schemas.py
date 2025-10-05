@@ -13,7 +13,7 @@ class CreateCalculationResponseSchema(BaseModel):
 
 
 class CalculationSchema(BaseModel):
-    result: int | None
+    result: dict[str, int] | None
     status: str
     scheduled_at: datetime
     calculated_at: datetime | None
