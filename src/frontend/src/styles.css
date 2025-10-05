@@ -1,0 +1,98 @@
+/* Global styles for the app */
+.app-container {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+}
+
+/* Map container takes full space; the card overlays on top of it */
+.map-container {
+  flex: 1;
+  height: 100%;
+  width: 100%;
+}
+
+/* Floating card for displaying results */
+.result-card {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background-color: #141414;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  max-width: 360px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  font-family: 'Roboto', sans-serif;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.result-card .score {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0;
+  display: flex;
+}
+
+/* Style digits differently using IBM Plex Serif */
+.result-card .score .digit {
+  font-family: 'IBM Plex Serif', serif;
+}
+
+.result-card .feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.result-card .feature-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.result-card .feature-list li .key {
+  color: #999999;
+  margin-right: 8px;
+}
+
+.result-card .feature-list li .value {
+  font-weight: 500;
+}
+
+.result-card .address {
+  font-size: 14px;
+  color: #b0b0b0;
+  line-height: 1.4;
+}
+
+/* Colors for different rating categories */
+.feature-green {
+  color: #7bc86c;
+}
+
+.feature-orange {
+  color: #ffab40;
+}
+
+.feature-red {
+  color: #ef5350;
+}
+
+/* Placeholder for map container if MapGL fails to load */
+.map-placeholder {
+  background-color: #222222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666666;
+  font-size: 16px;
+}
